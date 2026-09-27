@@ -37,15 +37,21 @@ export default function App() {
 
   const handleJoin = (e) => {
     e.preventDefault();
-    if (!username.trim() || !room.trim()) return;
+    
+    if (!username.trim() || !room.trim()) {
+      alert("Please enter both your name and Room ID!");
+      return;
+    }
     
     if (currentRoom) {
       socket.emit("leave", currentRoom);
     }
 
-    setCurrentRoom(room);
+    socket.emit("join", room.trim());
+
+    setCurrentRoom(room.trim());
     setJoined(true);
-    setMessages((prev) => [...prev, { user: "System", text: `You joined "${room}"`, system: true }]);
+    setMessages((prev) => [...prev, { user: "System", text: `You joined "${room.trim()}"`, system: true }]);
   };
 
   const handleLeave = () => {
@@ -64,7 +70,7 @@ export default function App() {
 
     const messageData = {
       room: currentRoom,
-      user: username,
+      user: username.trim(),
       text: messageInput,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -76,13 +82,9 @@ export default function App() {
 
   return (
     <div className="app-container">
-      
-      {/* LEFT SIDEBAR (Jaise pehli image mein tha) */}
       <div className="sidebar">
-        {/* Header with WhatsApp Logo & Realtime Chat */}
         <div className="sidebar-header">
           <div className="whatsapp-brand">
-            {/* Original WhatsApp SVG Logo */}
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="whatsapp-logo">
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
             </svg>
@@ -94,14 +96,13 @@ export default function App() {
           </div>
         </div>
 
-        {/* Form Body */}
         <div className="sidebar-form-area">
           <form onSubmit={handleJoin}>
             <div className="input-group">
               <label>Your name</label>
               <input
                 type="text"
-                placeholder=""
+                placeholder="Enter your name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="text-input"
@@ -113,7 +114,7 @@ export default function App() {
               <label>Room ID</label>
               <input
                 type="text"
-                placeholder=""
+                placeholder="Enter Room ID"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
                 className="text-input"
@@ -138,11 +139,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* RIGHT CHAT WINDOW */}
       <div className="chat-window">
         {joined ? (
           <>
-            {/* Top Chat Header */}
             <div className="chat-top-header">
               <div className="chat-room-title-area">
                 <h3>{currentRoom}</h3>
@@ -153,7 +152,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Messages Box */}
             <div className="messages-box">
               {messages.map((msg, index) => {
                 if (msg.system) {
@@ -171,7 +169,7 @@ export default function App() {
                     <div className={`msg-bubble ${isMe ? "sent" : "received"}`}>
                       {!isMe && <div className="msg-sender">{msg.user}</div>}
                       <p className="msg-text">{msg.text}</p>
-                      <span className="msg-time">{msg.time || "10:57 AM"}</span>
+                      <span className="msg-time">{msg.time}</span>
                     </div>
                   </div>
                 );
@@ -179,7 +177,6 @@ export default function App() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Bottom Input Area */}
             <div className="chat-bottom-bar">
               <form onSubmit={handleSendMessage} className="msg-form">
                 <input
@@ -190,7 +187,6 @@ export default function App() {
                   className="msg-input"
                 />
                 <button type="submit" className="send-icon-btn">
-                  {/* Send Paperplane Icon */}
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                   </svg>
@@ -207,7 +203,6 @@ export default function App() {
           </div>
         )}
       </div>
-
     </div>
   );
 }
