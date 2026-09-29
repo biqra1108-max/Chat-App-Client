@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import './App.css';
 
-const SOCKET_SERVER_URL = "http://localhost:5050"; 
+const SOCKET_SERVER_URL = "https://chat-app-server-xi-sand.vercel.app/"; 
 const socket = io(SOCKET_SERVER_URL);
 
 export default function App() {
